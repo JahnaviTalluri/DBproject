@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1 align="center">Login Page</h1>
+<form action="">
+<label>Username</label>
+<input value=" " placeholder="Enter username" type="text" name="username">
+<label>Password</label>
+<input value="" type="password" name="password">
+</form>
+<!--{{data}}-->
+{% for p in data%}
+   <h4>
+    {{p[2]}} <br>
+    ------------------
+   </h4>
+{% endfor %}
+
+<button>Login</button>
+</body>
+</html>
