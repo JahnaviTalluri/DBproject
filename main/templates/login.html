@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href='login.scss' />
+</head>
+
+<body>
+    <div class="welcome">
+        <span class="welcome-msg">
+            Welcome to Shopsphere
+        </span>
+        {% if step == 'existing_user' %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.email.label }}
+                <br>
+                {{ form.email() }}
+            </p>
+            <p>
+                {{ form.password.label }}
+                <br>
+                {{ form.password() }}
+            </p>
+            <p>{{ form.login() }}</p>
+            <p>{{ form.forgot_password() }}</p>
+        </form>
+        {% elif step == 'forgot_password' %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.email.label }}
+                <br>
+                {{ form.email() }}
+            </p>
+            <p>
+                {{ form.new_password.label }}
+                <br>
+                {{ form.new_password() }}
+            </p>
+            <p>{{ form.reset_password() }}</p>
+        </form>
+        {% elif step == 'new_user' %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.email.label }}
+                <br>
+                {{ form.email() }}
+                <br>
+                {% for error in form.email.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.password.label }}
+                <br>
+                {{ form.password() }}
+                <br>
+                {% for error in form.password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.create_account() }}</p>
+        </form>
+        {% elif step == None %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>{{ form.login() }}</p>
+            <p>{{ form.create_account() }}</p>
+        </form>
+        {% endif %}
+    </div>
+</body>
+
+</html>
