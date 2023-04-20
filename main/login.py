@@ -108,7 +108,7 @@ def change_user_password(form: ForgotPasswordForm):
     email = form.get_email()
     new_password = form.get_new_password()
 
-    password_changed = User().change_password(email, new_password)
+    password_changed = User(email).change_password(new_password)
 
     return redirect(LOGIN_PAGE_EXISTING_USER) if password_changed else None
 
@@ -117,7 +117,7 @@ def create_user_account(form: NewUserForm):
     email = form.get_email()
     password = form.get_password()
 
-    user_created = User().create_account(email, password)
+    user_created = User(email).create_account(password)
 
     return redirect(LOGIN_PAGE_EXISTING_USER) if user_created else None
 
@@ -151,6 +151,6 @@ def login_user(form: ExistingUserForm):
     email = form.get_email()
     password = form.get_password()
 
-    valid_creds = User().is_valid_login_creds(email, password)
+    valid_creds = User(email).is_valid_login_creds(password)
 
     return redirect(BROWSE_PRODUCTS_PAGE) if valid_creds else redirect(LOGIN_PAGE)
