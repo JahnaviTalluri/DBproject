@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product List</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='productstyle.css') }}">
+</head>
+<body style="background-image: url('/static/product.png')">
+  <h1>Product List</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product[0] }}</td>
+        <td>{{ product[1] }}</td>
+        <td>${{ product[2] }}</td>
+        <td><button class="buy-button">Buy Now</button></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
