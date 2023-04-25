@@ -6,25 +6,28 @@
 </head>
 <body style="background-image: url('/static/product.png')">
   <h1>Your Orders</h1>
-  {{dataproduct}}
   <table>
     <thead>
       <tr>
         <th>Order ID</th>
-        <th>CSSN</th>
-        <th>Status</th>
+        <th>Product ID</th>
+        <th>Product Name</th>
+        <th>Order Status</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
-      {% for product in products %}
+      {% for product in dataproduct %}
       <tr>
         <td>{{ product[0] }}</td>
-        <td>{{ product[1] }}</td>
         <td>{{ product[2] }}</td>
+        <td>{{ product[3] }}</td>
+        <td>{{ product[7] }}</td>
         <td><button class="buy-button" >Cancel Order</button></td>
       </tr>
       {% endfor %}
+    <button  onclick="window.location.href='{{ url_for('main',ssn=cssn) }}'">Home</button>
+
     </tbody>
   </table>
 </body>

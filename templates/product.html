@@ -6,6 +6,7 @@
 </head>
 <body style="background-image: url('/static/product.png')">
   <h1>Product List</h1>
+  <h2 align="center">From Price Low to High</h2>
   <table>
     <thead>
       <tr>
@@ -21,7 +22,7 @@
         <td>{{ product[0] }}</td>
         <td>{{ product[1] }}</td>
         <td>${{ product[2] }}</td>
-        <td><button class="buy-button" onclick="window.location.href='{{ url_for('payment', product_id=product[0]) }}'">Buy Now</button></td>
+        <td><button class="buy-button" onclick="window.location.href='{{ url_for('payment', product_id=product[0] ,ssn=cssn) }}'">Buy Now</button></td>
       </tr>
       {% endfor %}
     </tbody>

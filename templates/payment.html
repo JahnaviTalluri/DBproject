@@ -10,11 +10,11 @@
 	<h2>Selected Products</h2>
 	<ul>
 		{% for product in data %}
-			<li>{{ product[1]}} - ${{ product[2] }}</li>
-		{% endfor %}
+			<li>{{product[0]}} - {{ product[1]}} - ${{ product[2] }}</li>
+
 	</ul>
 
-	<form class="payment-form">
+	<form class="payment-form" method="post" action="{{ url_for('placeorder', productid=product[0],ssn=cssn) }}'">
 		<h2>Card Details</h2>
 		<div class="form-group">
 			<label for="cardholder_name">Cardholder Name:</label>
@@ -55,7 +55,8 @@
 			<input type="text" id="zip_code" name="zip_code" required>
 		</div>
 
-		<button type="submit" class="btn">Place Order</button>
+		<button type="submit"  class="button" onclick="window.location.href='{{ url_for('placeorder', productid=product[0],ssn=cssn) }}'">Place Orders</button>
+		{% endfor %}
 	</form>
 </div>
 </body>
