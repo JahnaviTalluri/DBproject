@@ -16,27 +16,39 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def home():
     conn, c = sql_connector()
+    msg = ''
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         print(username)
         print(password)
-        c.execute('SELECT * FROM person WHERE username = %s AND password = %s', (username, password,))
+        c.execute('SELECT * FROM person WHERE ssn = %s AND password = %s', (username, password))
 
         # Fetch one record and return result
         account = c.fetchone()
+
         print(account)
         if account:
-            print("logged in!!!!!!!")
+            msg="logged in!!!!!!!"
+            return redirect(url_for('main',ssn = username))
+        else:
+            msg="wrong credentials"
+            return redirect(url_for('home'))
     c.execute("SELECT * FROM person")
     fetchdata = c.fetchall()
     conn.commit()
     conn.close()
     c.close()
-    return render_template('loginpage.html',data=fetchdata)
-@app.route('/home',methods=['GET','POST'])
-def main():
-    return render_template('Home.html')
+    return render_template('loginpage.html',data=fetchdata, msg=msg)
+@app.route('/home/<string:ssn>',methods=['GET','POST'])
+def main(ssn):
+    print(ssn)
+    conn, c = sql_connector()
+    c.execute('SELECT * FROM person where ssn = %s ', (ssn))
+    data1 = c.fetchall()
+    print(data1)
+    print("----")
+    return render_template('Home.html',data=data1)
 @app.route('/product',methods=['GET','POST'])
 def product():
     conn, c = sql_connector()
@@ -46,9 +58,27 @@ def product():
 @app.route('/about',methods=['GET'])
 def about():
     return render_template('about.html')
-@app.route('/payment',methods=['GET','POST'])
-def payment():
-    return render_template('payment.html')
+@app.route('/payment/<string:product_id>',methods=['GET','POST'])
+def payment(product_id):
+    print(product_id)
+    conn, c = sql_connector()
+    c.execute('SELECT * FROM product where Product_ID = %s ',(product_id))
+    data1 = c.fetchall()
+    print(data1)
+    return render_template('payment.html',data=data1)
+@app.route('/contact',methods=['GET','POST'])
+def contact():
+    return render_template('contact.html')
+@app.route('/home/<string:ssn>/order',methods=['GET','POST'])
+def order(ssn):
+    conn, c = sql_connector()
+    c.execute('SELECT * FROM order1 where cssn = %s ', (ssn))
+    data1 = c.fetchall()
+    orderid =data1[0][0]
+    c.execute('select * from order_product , product ,order1  where order_product.Product_ID=product.product_ID and Order_ID= %s and cssn = %s',(orderid,ssn))
+    product=c.fetchall()
+    return render_template('order.html',products=data1,dataproduct=product)
+
 @app.route('/create',methods=['GET','POST'])
 def register():
     # Output message if something goes wrong...
@@ -75,6 +105,8 @@ def register():
         if c.rowcount==1:
             msg = 'Registerd Succesfully '
             return redirect(url_for('home'))
+        else:
+            msg='Error in the values entered'
         # elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         #     msg = 'Invalid email address!'
         # elif not re.match(r'[A-Za-z0-9]+', username):

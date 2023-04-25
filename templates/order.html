@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Product List</title>
+  <title>Your Orders</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='productstyle.css') }}">
 </head>
 <body style="background-image: url('/static/product.png')">
-  <h1>Product List</h1>
+  <h1>Your Orders</h1>
+  {{dataproduct}}
   <table>
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
+        <th>Order ID</th>
+        <th>CSSN</th>
+        <th>Status</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -20,8 +21,8 @@
       <tr>
         <td>{{ product[0] }}</td>
         <td>{{ product[1] }}</td>
-        <td>${{ product[2] }}</td>
-        <td><button class="buy-button" onclick="window.location.href='{{ url_for('payment', product_id=product[0]) }}'">Buy Now</button></td>
+        <td>{{ product[2] }}</td>
+        <td><button class="buy-button" >Cancel Order</button></td>
       </tr>
       {% endfor %}
     </tbody>
