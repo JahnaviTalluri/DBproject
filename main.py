@@ -74,14 +74,14 @@ def product(view):
             conn.commit()
 
             msg = 'Created Succesfully'
-            return redirect(url_for('main'))
+            return redirect(url_for('product', view = 'read'))
         else:
             msg = "Please fill the form!"
 
     if usertype == 'customer':
         c.execute('SELECT * FROM product ORDER BY CAST(price AS float) ASC')
     elif usertype == 'supplier':
-        c.execute(f"SELECT * FROM product WHERE supplier='{ssn}'")
+        c.execute(f"SELECT * FROM product WHERE supplier='{ssn}' ORDER BY CAST(price AS float) ASC")
 
     fetchdata = c.fetchall()
     return render_template('product.html',view=view,products=fetchdata, usertype=usertype, msg=msg, product_info=None)
@@ -105,7 +105,7 @@ def edit_product(product_id):
             conn.commit()
 
             msg = 'Updated Succesfully'
-            return redirect(url_for('main'))
+            return redirect(url_for('product', view = 'read'))
 
     return render_template('product.html', view='edit', products=[], usertype=usertype, msg=msg, product_info=product_info)
 
@@ -114,7 +114,8 @@ def about():
     return render_template('about.html')
 
 @app.route('/home/product/payment/<string:product_id>',methods=['GET','POST'])
-def payment(product_id,ssn):
+def payment(product_id):
+    ssn = session['user']
     print(product_id)
     conn, c = sql_connector()
     c.execute('SELECT * FROM product where Product_ID = %s ',(product_id))
@@ -126,8 +127,9 @@ def payment(product_id,ssn):
 def contact():
     return render_template('contact.html')
 
-@app.route('/home/<string:ssn>/order',methods=['GET','POST'])
-def order(ssn):
+@app.route('/home/order',methods=['GET','POST'])
+def order():
+    ssn = session['user']
     conn, c = sql_connector()
     c.execute('SELECT * FROM order1 where cssn = %s ', (ssn))
     data1 = c.fetchall()
@@ -135,8 +137,10 @@ def order(ssn):
     product=c.fetchall()
     ssn=ssn
     return render_template('order.html',products=data1,dataproduct=product,cssn=ssn)
-@app.route('/home/<string:ssn>/product/payment/<string:productid>/ordered',methods=['GET','POST'])
-def placeorder(productid,ssn):
+
+@app.route('/home/product/payment/<string:productid>/ordered',methods=['GET','POST'])
+def placeorder(productid):
+        ssn = session['user']
         msg=''
         ID = uuid.uuid4()
         Order_ID = str(randrange(100000, 999999))
@@ -150,12 +154,13 @@ def placeorder(productid,ssn):
         c.execute('INSERT INTO order_product1 VALUES(%s,%s)',(Order_ID,Product_ID))
         conn.commit()
         if c.rowcount == 1:
-            msg = 'Order Placedd '
+            msg = 'Order Placed'
             print("order placedddd")
         else:
             msg = 'Error in the values entered'
             print("not ordereddddd")
-        return render_template('orderplaced.html',msg=msg,ssn=ssn)
+        return render_template('orderplaced.html',msg=msg)
+
 @app.route('/create',methods=['GET','POST'])
 def register():
     # Output message if something goes wrong...

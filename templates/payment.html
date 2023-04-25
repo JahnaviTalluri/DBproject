@@ -55,7 +55,7 @@
 			<input type="text" id="zip_code" name="zip_code" required>
 		</div>
 
-		<button type="submit"  class="button" onclick="window.location.href='{{ url_for('placeorder', productid=product[0],ssn=cssn) }}'">Place Orders</button>
+		<button type="submit"  class="button" onclick="window.location.href='{{ url_for('placeorder', productid=product[0]) }}'">Place Orders</button>
 		{% endfor %}
 	</form>
 </div>

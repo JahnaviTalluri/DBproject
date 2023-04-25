@@ -65,7 +65,7 @@
 	<button class="button about" onclick="window.location.href='{{ url_for('about') }}'">About Us</button>
 	<button class="button contact" onclick="window.location.href='{{ url_for('contact') }}'">Contact Us</button>
 	<button class="button bug">Report Bug</button>
-	<button class="button about" onclick="window.location.href='{{ url_for('order',ssn=product[0])}}'">MyOrders</button>
+	<button class="button about" onclick="window.location.href='{{ url_for('order',ssn=product[0])}}'">My Orders</button>
 	{% elif usertype == 'supplier' %}
 	<button class="button shop" onclick="window.location.href='{{ url_for('product', view='read') }}'">View
 		Products</button>
