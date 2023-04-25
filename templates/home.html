@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>	Home </title>
+	<title> Home </title>
 	<style>
 		.button {
-			background-color: #4CAF50; /* Green */
+			background-color: #4CAF50;
+			/* Green */
 			border: none;
 			color: white;
 			padding: 15px 32px;
@@ -15,42 +17,66 @@
 			margin: 4px 2px;
 			cursor: pointer;
 			border: 1.5px solid #C7BEBE;
-  border-bottom-width: 2.5px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
+			border-bottom-width: 2.5px;
+			border-radius: 6px;
+			transition: all 0.3s ease;
 		}
+
 		.shop {
-			background-color: #008CBA; /* Blue */
+			background-color: #008CBA;
+			/* Blue */
 		}
+
 		.about {
-			background-color: #f44336; /* Red */
+			background-color: #f44336;
+			/* Red */
 		}
+
 		.contact {
-			background-color: #555555; /* Dark Grey */
+			background-color: #555555;
+			/* Dark Grey */
 		}
+
 		.bug {
-			background-color: #555555; /* Dark Grey */
+			background-color: #555555;
+			/* Dark Grey */
 			color: white;
 		}
+
 		.quit {
-			background-color: #555555; /* Dark Grey */
+			background-color: #555555;
+			/* Dark Grey */
 			color: white;
 		}
 	</style>
 </head>
+
 <body style="background-image: url('/static/colorpens.jpeg')">
 	<h1 align="center">Welcome to SHOPSPHERE</h1>
 	{% for product in data %}
 	<h2 align="right">
-			<p> Hello {{ product[1] }} {{ product[2]}} !!</p>
-		</h2>
+		<p> Hello {{ product[1] }} {{ product[2]}} !!</p>
+	</h2>
+
 	<p>Choose an option below:</p>
-	<button class="button shop" onclick="window.location.href='{{ url_for('product',ssn=product[0]) }}'">Shop Products</button>
+	{% if usertype == 'customer' %}
+	<button class="button shop" onclick="window.location.href='{{ url_for('product', view='read') }}'">Shop
+		Products</button>
 	<button class="button about" onclick="window.location.href='{{ url_for('about') }}'">About Us</button>
 	<button class="button contact" onclick="window.location.href='{{ url_for('contact') }}'">Contact Us</button>
 	<button class="button bug">Report Bug</button>
+	<button class="button about" onclick="window.location.href='{{ url_for('order',ssn=product[0])}}'">MyOrders</button>
+	{% elif usertype == 'supplier' %}
+	<button class="button shop" onclick="window.location.href='{{ url_for('product', view='read') }}'">View
+		Products</button>
+	<button class="button contact" onclick="window.location.href='{{ url_for('product', view='edit') }}'">Edit
+		Products</button>
+	<button class="button about" onclick="window.location.href='{{ url_for('product', view='create') }}'">Add
+		Product</button>
+	{% endif %}
 	<button class="button quit" onclick="window.location.href='{{ url_for('home') }}'">Quit</button>
-    <button class="button about" onclick="window.location.href='{{ url_for('order',ssn=product[0])}}'">MyOrders</button>
-{% endfor %}
+
+	{% endfor %}
 </body>
+
 </html>

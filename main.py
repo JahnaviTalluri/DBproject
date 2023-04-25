@@ -20,61 +20,112 @@ def home():
     conn, c = sql_connector()
     msg = ''
     if request.method == 'POST':
-        username = request.form.get('username')
+        ssn = request.form.get('ssn')
         password = request.form.get('password')
-        print(username)
+        usertype = request.form.get('usertype')
+        print(ssn)
         print(password)
-        c.execute('SELECT * FROM person WHERE ssn = %s AND password = %s', (username, password))
+        c.execute(f"SELECT * FROM person as P, {usertype} as C WHERE P.ssn = C.ssn AND P.ssn = {ssn} AND P.password = '{password}';")
 
         # Fetch one record and return result
         account = c.fetchone()
 
         print(account)
         if account:
+            session['user'] = ssn
+            session['usertype'] = usertype
             msg="logged in!!!!!!!"
-            return redirect(url_for('main',ssn = username))
+            return redirect(url_for('main'))
         else:
             msg="wrong credentials"
-            return redirect(url_for('home'))
     c.execute("SELECT * FROM person")
     fetchdata = c.fetchall()
     conn.commit()
     conn.close()
     c.close()
     return render_template('loginpage.html',data=fetchdata, msg=msg)
-@app.route('/home/<string:ssn>',methods=['GET','POST'])
-def main(ssn):
-    print(ssn)
+
+@app.route('/home',methods=['GET','POST'])
+def main():
+    ssn = session['user']
+    usertype = session['usertype']
     conn, c = sql_connector()
     c.execute('SELECT * FROM person where ssn = %s ', (ssn))
     data1 = c.fetchall()
     print(data1)
     print("----")
-    return render_template('Home.html',data=data1)
-@app.route('/home/<string:ssn>/product',methods=['GET','POST'])
-def product(ssn):
-    conn, c = sql_connector()
-    c.execute('SELECT * FROM product ORDER BY CAST(price AS float) ASC')
-    fetchdata = c.fetchall()
-    ssn = ssn
-    return render_template('product.html',products=fetchdata,cssn=ssn)
+    return render_template('Home.html',data=data1, usertype=usertype)
 
+@app.route('/product/<string:view>',methods=['GET','POST'])
+def product(view):
+    ssn = session['user']
+    usertype = session['usertype']
+
+    conn, c = sql_connector()
+    msg = ""
+
+    if request.method == 'POST':
+        if view == 'create' and 'product_id' in request.form and 'name' in request.form and 'price' in request.form:
+            product_id = request.form['product_id']
+            name = request.form['name']
+            price = request.form['price']
+
+            c.execute('INSERT INTO product VALUES(%s, %s, %s , %s)',(product_id, name, price, ssn))
+            conn.commit()
+
+            msg = 'Created Succesfully'
+            return redirect(url_for('main'))
+        else:
+            msg = "Please fill the form!"
+
+    if usertype == 'customer':
+        c.execute('SELECT * FROM product ORDER BY CAST(price AS float) ASC')
+    elif usertype == 'supplier':
+        c.execute(f"SELECT * FROM product WHERE supplier='{ssn}'")
+
+    fetchdata = c.fetchall()
+    return render_template('product.html',view=view,products=fetchdata, usertype=usertype, msg=msg, product_info=None)
+
+@app.route('/product/edit/<string:product_id>', methods=['GET', 'POST'])
+def edit_product(product_id):
+    usertype = session['usertype']
+
+    conn, c = sql_connector()
+    msg = ""
+
+    c.execute(f"SELECT * FROM product WHERE product_id={product_id}")
+    product_info = c.fetchone()
+
+    if request.method == 'POST':
+        if 'name' in request.form and 'price' in request.form:
+            name = request.form['name']
+            price = request.form['price']
+
+            c.execute('UPDATE Product SET name=%s, price=%s WHERE product_id=%s;',(name, price, product_id))
+            conn.commit()
+
+            msg = 'Updated Succesfully'
+            return redirect(url_for('main'))
+
+    return render_template('product.html', view='edit', products=[], usertype=usertype, msg=msg, product_info=product_info)
 
 @app.route('/about',methods=['GET'])
 def about():
     return render_template('about.html')
-@app.route('/home/<string:ssn>/product/payment/<string:product_id>',methods=['GET','POST'])
+
+@app.route('/home/product/payment/<string:product_id>',methods=['GET','POST'])
 def payment(product_id,ssn):
     print(product_id)
     conn, c = sql_connector()
     c.execute('SELECT * FROM product where Product_ID = %s ',(product_id))
     data1 = c.fetchall()
     print(data1)
-    cssn = ssn
-    return render_template('payment.html',data=data1,cssn=cssn)
+    return render_template('payment.html',data=data1)
+
 @app.route('/contact',methods=['GET','POST'])
 def contact():
     return render_template('contact.html')
+
 @app.route('/home/<string:ssn>/order',methods=['GET','POST'])
 def order(ssn):
     conn, c = sql_connector()
@@ -130,10 +181,16 @@ def register():
          c.execute('INSERT INTO customer values(%s)',(ssn))
          conn.commit()
         # If account exists show error and validation checks
-         if c.rowcount==1:
+        if c.rowcount==1:
+            c.execute(F"INSERT INTO {usertype} VALUES({ssn})")
+            conn.commit()
+
+            if c.rowcount == 1:
                 msg = 'Registerd Succesfully '
-                return redirect(url_for('home',msg=msg))
-         else:
+                return redirect(url_for('home', msg=msg))
+            else:
+                msg='Error in the values entered'
+        else:
             msg='Error in the values entered'
         # elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         #     msg = 'Invalid email address!'
@@ -145,7 +202,11 @@ def register():
     #     msg = 'Please fill out the form!'
 
     return render_template('create.html', msg=msg)
+
 if __name__ == '__main__':
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
+
     app.run(debug=True)
 
 # pymysql, mysql-connector, mysql-connector-python

@@ -1,31 +1,81 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Product List</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='productstyle.css') }}">
+	<title>Product List</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='productstyle.css') }}">
 </head>
+
 <body style="background-image: url('/static/product.png')">
-  <h1>Product List</h1>
-  <h2 align="center">From Price Low to High</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for product in products %}
-      <tr>
-        <td>{{ product[0] }}</td>
-        <td>{{ product[1] }}</td>
-        <td>${{ product[2] }}</td>
-        <td><button class="buy-button" onclick="window.location.href='{{ url_for('payment', product_id=product[0] ,ssn=cssn) }}'">Buy Now</button></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+	{% if view == 'read' or (view == 'edit' and not product_info) %}
+	<h1>Product List</h1>
+	<h2 align="center">From Price Low to High</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Price</th>
+				{% if (usertype == 'customer' and view == 'read') or (usertype == 'supplier' and view == 'edit') %}
+				<th>Action</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for product in products %}
+			<tr>
+				<td>{{ product[0] }}</td>
+				<td>{{ product[1] }}</td>
+				<td>${{ product[2] }}</td>
+				{% if usertype == 'customer' and view == 'read' %}
+				<td><button class="buy-button"
+						onclick="window.location.href='{{ url_for('payment', product_id=product[0]) }}'">Buy
+						Now</button></td>
+				{% elif usertype == 'supplier' and view == 'edit' %}
+				<td><button class="buy-button"
+						onclick="window.location.href='{{ url_for('edit_product', product_id=product[0]) }}'">Edit</button>
+				</td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% elif view == 'create' %}
+	<h1>Add Product</h1>
+	<form action="" method="post">
+		<div class="input-box">
+			<input type="text" name="product_id" placeholder="Product ID" required>
+		</div>
+		<div class="input-box">
+			<input type="text" name="name" placeholder="Name" required>
+		</div>
+		<div class="input-box">
+			<input type="text" name="price" placeholder="Price in Dollars" required>
+		</div>
+		<div class="input-box button">
+			<input type="Submit" value="Create">
+		</div>
+		{{msg}}
+	</form>
+	{% elif view == 'edit' and product_info %}
+	<h1>Edit Product</h1>
+	<h2>Selected Product</h2>
+	<ul>
+		<li>{{ product_info[1]}} - ${{ product_info[2] }}</li>
+	</ul>
+	<form action="" method="post">
+		<div class="input-box">
+			<input type="text" name="name" placeholder="Name" required>
+		</div>
+		<div class="input-box">
+			<input type="text" name="price" placeholder="Price in Dollars" required>
+		</div>
+		<div class="input-box button">
+			<input type="Submit" value="Edit">
+		</div>
+		{{msg}}
+	</form>
+	{% endif %}
 </body>
+
 </html>

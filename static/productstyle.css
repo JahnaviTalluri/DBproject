@@ -9,6 +9,19 @@ h1 {
   margin-bottom: 20px;
 }
 
+h2 {
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
 table {
   width: 80%;
   margin: 0 auto;
@@ -42,4 +55,43 @@ tbody tr:nth-child(even) {
 
 .buy-button:hover {
   background-color: #0056b3;
+}
+
+form{
+  margin: 30px auto;
+  width: 430px;
+}
+
+form .input-box{
+  height: 52px;
+  margin: 18px 0;
+}
+
+form .input-box input{
+  height: 100%;
+  width: 100%;
+  outline: none;
+  padding: 0 15px;
+  font-size: 17px;
+  font-weight: 400;
+  color: #333;
+  border: 1.5px solid #C7BEBE;
+  border-bottom-width: 2.5px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+.input-box input:focus,
+.input-box input:valid{
+  border-color: #fbc101;
+}
+
+.input-box.button input{
+  color: #fff;
+  letter-spacing: 1px;
+  border: none;
+  background: #fbc101;
+  cursor: pointer;
+}
+.input-box.button input:hover{
+  background: #0e4bf1;
 }
